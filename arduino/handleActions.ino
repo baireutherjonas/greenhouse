@@ -15,6 +15,9 @@
 DHT dht(DHTPIN, DHTTYPE);
 DHT dht_outdoor(DHTPINOUTDOOR, DHTTYPE);
 
+// WATERING
+long startWateringTime;
+bool isWatering;
 
 void initSensorActuators() {
   dht.begin();
@@ -22,16 +25,30 @@ void initSensorActuators() {
   pinMode(RELAISPIN, OUTPUT);
   pinMode(TRIGGERPIN, OUTPUT);
   pinMode(ECHOPIN, OUTPUT);
+  isWatering = false;
 }
 
 void startWatering() {
   digitalWrite(RELAISPIN, HIGH);
   publishMessage(TOPIC_STATUS_DATA, MESSAGE_START_WATERING);
+  startWateringTime = millis();
+  isWatering = true;
 }
 
 void stopWatering() {
   digitalWrite(RELAISPIN, LOW);
+  isWatering = false;
   publishMessage(TOPIC_STATUS_DATA, MESSAGE_STOP_WATERING);
+}
+
+void checkFallBackWatering() {
+  if(isWatering) {
+    long actualTime = millis();
+    // 60000 is the minutes to millis factor
+    if(actualTime > startWateringTime + config_fallbackMaxWateringDuration* 60000) { 
+      stopWatering();
+    }
+  }
 }
 
 long getWaterstand() {

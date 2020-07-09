@@ -26,3 +26,4 @@
 const int config_watergroundDistance = 24;
 const int config_soilMoistureMax = 800;
 const int config_soilMoistureMin = 330;
+const int config_fallbackMaxWateringDuration = 30; //Min

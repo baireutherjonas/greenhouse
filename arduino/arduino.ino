@@ -27,7 +27,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
     sAll.toCharArray(cMsg, sizeof(cMsg));
     publishMessage(TOPIC_RECEIVED_DATA, cMsg);
     handleMessage(msg);
-   
 }
 
 void handleMessage(char* message) {
@@ -71,4 +70,5 @@ void loop() {
         reconnect();
     }
     client.loop();
+    checkFallBackWatering();
 }
