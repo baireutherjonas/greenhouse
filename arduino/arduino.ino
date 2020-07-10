@@ -1,40 +1,44 @@
+// LIBRARIES
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "config.h"
 #include "wificonfig.h"
+#include <ArduinoJson.h>
 
+// WIFI-CONFIG
 WiFiClient espClient;
 PubSubClient client(espClient);
  
 void setup() {
-    Serial.begin(115200);
-    setup_wifi();
-    client.setServer(MQTT_BROKER, 1883);
-    client.setCallback(callback);
-    initSensorActuators();
+  Serial.begin(115200);
+  setup_wifi();
+  client.setServer(MQTT_BROKER, 1883);
+  client.setCallback(callback);
+  initSensors();
+  initWatering();
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
-    char msg[length];
-    for (int i = 0; i < length; i++) {
-        msg[i] = (char)payload[i];
-    }
-    String sTopic = topic;
-    String sMsg = msg;
-    String sAll = sTopic + ":" + sMsg;
+  char msg[length];
+  for (int i = 0; i < length; i++) {
+      msg[i] = (char)payload[i];
+  }
+  String sTopic = topic;
+  String sMsg = msg;
+  String sAll = sTopic + ":" + sMsg;
 
-    Serial.println(msg);
-    char cMsg[sAll.length()+1];
-    sAll.toCharArray(cMsg, sizeof(cMsg));
-    publishMessage(TOPIC_RECEIVED_DATA, cMsg);
+  Serial.println(msg);
+  char cMsg[sAll.length()+1];
+  sAll.toCharArray(cMsg, sizeof(cMsg));
+  publishMessage(TOPIC_RECEIVED_DATA, cMsg);
 
-    // Create json-object out of message
-    DynamicJsonDocument doc(1024);
-    deserializeJson(doc, sMsg);
-    JsonObject jsonObj = doc.as<JsonObject>();
-    
-    handleMessage(jsonObj);
+  // Create json-object out of message
+  DynamicJsonDocument doc(1024);
+  deserializeJson(doc, sMsg);
+  JsonObject jsonObj = doc.as<JsonObject>();
+  
+  handleMessage(jsonObj);
 }
 
 void handleMessage(JsonObject message) {
