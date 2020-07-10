@@ -1,0 +1,3 @@
+const char* SSID = "WIFI SSID";
+const char* PSK = "WIFI PASSWORD";
+const char* MQTT_BROKER = "BROKER IP OR DNS NAME";

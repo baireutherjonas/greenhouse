@@ -4,7 +4,6 @@
 #include <ArduinoJson.h>
 #include "config.h"
 #include "wificonfig.h"
-#include <ArduinoJson.h>
 
 // WIFI-CONFIG
 WiFiClient espClient;
