@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 #include "config.h"
 #include "wificonfig.h"
 
@@ -15,27 +16,36 @@ void setup() {
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
-    char msg[length+1];
-    for (int i = 0; i < length+1; i++) {
+    char msg[length];
+    for (int i = 0; i < length; i++) {
         msg[i] = (char)payload[i];
     }
     String sTopic = topic;
     String sMsg = msg;
     String sAll = sTopic + ":" + sMsg;
-    
+
+    Serial.println(msg);
     char cMsg[sAll.length()+1];
     sAll.toCharArray(cMsg, sizeof(cMsg));
     publishMessage(TOPIC_RECEIVED_DATA, cMsg);
-    handleMessage(msg);
+
+    // Create json-object out of message
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, sMsg);
+    JsonObject jsonObj = doc.as<JsonObject>();
+    
+    handleMessage(jsonObj);
 }
 
-void handleMessage(char* message) {
-   if(message == ACTION_START_WATERING) {
-        startWatering();
-    } else if(message == ACTION_STOP_WATERING) {
+void handleMessage(JsonObject message) {
+   if(message[JSON_KEY_ACTION] == ACTION_START_WATERING) {
+        startWatering(message[JSON_KEY_PARAMETER]);
+    } else if(message[JSON_KEY_ACTION] == ACTION_STOP_WATERING) {
         stopWatering();
-    } else if(message == ACTION_GET_SENSOR_DATA) {
-        getSensorData();
+    } else if(message[JSON_KEY_ACTION] == ACTION_GET_SENSOR_DATA) {
+        getSensorData(message[JSON_KEY_PARAMETER]);
+    } else if(message[JSON_KEY_ACTION] == ACTION_SLEEP) {
+      goSleeping(message[JSON_KEY_PARAMETER]);
     }
 }
  
@@ -70,5 +80,5 @@ void loop() {
         reconnect();
     }
     client.loop();
-    checkFallBackWatering();
+    __checkFallBackWatering();
 }

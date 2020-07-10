@@ -28,7 +28,7 @@ void initSensorActuators() {
   isWatering = false;
 }
 
-void startWatering() {
+void startWatering(JsonObject jsonObj) {
   digitalWrite(RELAISPIN, HIGH);
   publishMessage(TOPIC_STATUS_DATA, MESSAGE_START_WATERING);
   startWateringTime = millis();
@@ -41,7 +41,7 @@ void stopWatering() {
   publishMessage(TOPIC_STATUS_DATA, MESSAGE_STOP_WATERING);
 }
 
-void checkFallBackWatering() {
+void __checkFallBackWatering() {
   if(isWatering) {
     long actualTime = millis();
     // 60000 is the minutes to millis factor
@@ -51,24 +51,25 @@ void checkFallBackWatering() {
   }
 }
 
-long getWaterstand() {
+long __getWaterstand(int watergroundDistance) {
   digitalWrite(TRIGGERPIN, LOW);
   delay(5);
   digitalWrite(TRIGGERPIN, HIGH);
   delay(10);
   digitalWrite(TRIGGERPIN, LOW);
   long duration = pulseIn(ECHOPIN, HIGH);
-  return config_watergroundDistance-(duration/2) * 0.03432;
+  return watergroundDistance-(duration/2) * 0.03432;
 }
 
-void getSensorData() {
-  long waterheight = getWaterstand();
+void getSensorData(JsonObject jsonObj) {
+  Serial.println("getsensordata: " );
+  long waterheight = __getWaterstand(jsonObj[JSON_KEY_WATERGROUNDDISTANCE]);
   float hum = dht.readHumidity();
   float temp= dht.readTemperature();
   float hum_outdoor = dht_outdoor.readHumidity();
   float temp_outdoor= dht_outdoor.readTemperature();
   int sensorValue = analogRead(SOILPIN);
-  int sensorValueMapped = map(sensorValue,config_soilMoistureMax,config_soilMoistureMin,0,100);
+  int sensorValueMapped = map(sensorValue,jsonObj[JSON_KEY_SOILMOISTUREMAX],jsonObj[JSON_KEY_SOILMOISTUREMIN],0,100);
   
   // Prepare JSON document
   DynamicJsonDocument doc(2048);
@@ -83,6 +84,12 @@ void getSensorData() {
   // Serialize JSON document
   String json;
   serializeJson(doc, json);
+  Serial.println("getsensordata: " + json);
 
   publishMessage(TOPIC_SENSOR_DATA, json);
+}
+
+void goSleeping(JsonObject jsonObj) {
+  int timeToSleep = jsonObj[JSON_KEY_TIMETOSLEEP];
+  ESP.deepSleep(timeToSleep*60000000); 
 }
