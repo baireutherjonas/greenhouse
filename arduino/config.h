@@ -1,11 +1,11 @@
-#define CLIENT_ID "greenhouse"
+#define CLIENT_ID "greenhouse1"
 
 #define TOPIC_RECEIVED_DATA "/greenhouse/receivedData"
 #define TOPIC_SENSOR_DATA "/greenhouse/sensorData"
 #define TOPIC_STATUS_DATA "/greenhouse/statusMonitor"
 #define TOPIC_ACTION_GREENHOUSE "/greenhouse/actionGreenhouse"
 
-#define MESSAGE_GREENHOUSE_IS_ONLINE "greenhouse is now connected"
+#define MESSAGE_GREENHOUSE_IS_ONLINE "{\"action\":\"greenhouse is now connected\"}"
 #define MESSAGE_START_WATERING "greenhouse start watering"
 #define MESSAGE_STOP_WATERING "greenhouse stop watering"
 
@@ -25,7 +25,7 @@
 #define JSON_KEY_HEIGHT "height"
 #define JSON_KEY_PARAMETER "parameter"
 #define JSON_KEY_ACTION "action"
-#define JSON_KEY_TIMETOSLEEP "sleppingtime"
+#define JSON_KEY_TIMETOSLEEP "sleepingtime"
 #define JSON_KEY_SOILMOISTUREMAX "soilMoistureMax"
 #define JSON_KEY_SOILMOISTUREMIN "soilMoistureMin"
 #define JSON_KEY_WATERGROUNDDISTANCE "watergroundDistance"

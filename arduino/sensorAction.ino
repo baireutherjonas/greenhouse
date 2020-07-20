@@ -32,13 +32,13 @@ long __getWaterstand(int watergroundDistance) {
 
 void getSensorData(JsonObject jsonObj) {
   Serial.println("getsensordata: " );
-  long waterheight = __getWaterstand(jsonObj[JSON_KEY_WATERGROUNDDISTANCE]);
+  long waterheight = __getWaterstand(jsonObj[JSON_KEY_PARAMETER][JSON_KEY_WATERGROUNDDISTANCE]);
   float hum = dht.readHumidity();
   float temp= dht.readTemperature();
   float hum_outdoor = dht_outdoor.readHumidity();
   float temp_outdoor= dht_outdoor.readTemperature();
   int sensorValue = analogRead(SOILPIN);
-  int sensorValueMapped = map(sensorValue,jsonObj[JSON_KEY_SOILMOISTUREMAX],jsonObj[JSON_KEY_SOILMOISTUREMIN],0,100);
+  int sensorValueMapped = map(sensorValue,jsonObj[JSON_KEY_PARAMETER][JSON_KEY_SOILMOISTUREMAX],jsonObj[JSON_KEY_PARAMETER][JSON_KEY_SOILMOISTUREMIN],0,100);
   
   // Prepare JSON document
   DynamicJsonDocument doc(2048);
@@ -59,6 +59,9 @@ void getSensorData(JsonObject jsonObj) {
 }
 
 void goSleeping(JsonObject jsonObj) {
-  int timeToSleep = jsonObj[JSON_KEY_TIMETOSLEEP];
+  Serial.print("sleeping: ");
+  Serial.println(int(jsonObj[JSON_KEY_PARAMETER][JSON_KEY_TIMETOSLEEP]));
+  int timeToSleep = jsonObj[JSON_KEY_PARAMETER][JSON_KEY_TIMETOSLEEP];
+  wifi_off();
   ESP.deepSleep(timeToSleep*60000000); 
 }

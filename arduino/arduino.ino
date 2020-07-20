@@ -41,14 +41,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void handleMessage(JsonObject message) {
+  Serial.print("action: ");
+  const char* error = message[JSON_KEY_ACTION];
+  Serial.println(error);
    if(message[JSON_KEY_ACTION] == ACTION_START_WATERING) {
-        startWatering(message[JSON_KEY_PARAMETER]);
+        startWatering(message);
     } else if(message[JSON_KEY_ACTION] == ACTION_STOP_WATERING) {
         stopWatering();
     } else if(message[JSON_KEY_ACTION] == ACTION_GET_SENSOR_DATA) {
-        getSensorData(message[JSON_KEY_PARAMETER]);
+        getSensorData(message);
     } else if(message[JSON_KEY_ACTION] == ACTION_SLEEP) {
-      goSleeping(message[JSON_KEY_PARAMETER]);
+      goSleeping(message);
     }
 }
  
@@ -60,8 +63,15 @@ void setup_wifi() {
     }
 }
 
+void wifi_off() {
+  Serial.println("WiFi Off");
+  WiFi.disconnect();
+  WiFi.mode(WIFI_OFF); 
+  WiFi.forceSleepBegin();
+}
+
 void publishMessage(char* topic, String message) {
-  String msg = "received message: " + message;
+  String msg = message;
   char c[msg.length()+1];
   msg.toCharArray(c, sizeof(c));
   client.publish(topic, c);
