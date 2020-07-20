@@ -1,0 +1,33 @@
+version: "2"
+services:
+  controller:
+    image: greenhouse-controller
+    build: ./controller
+    container_name: greenhouse-controller
+    restart: always
+    links:
+      - "notification-service:notification-service"
+      - "mosquitto:mqtt"
+    depends_on:
+      - mosquitto
+      - notification-service
+  
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: greenhouse-mqtt
+    restart: always
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+
+  notification-service:
+    build: ./notification-service
+    image: greenhouse-notification-service
+    container_name: greenhouse-notification-service
+    expose:
+      - "5000"
+    volumes:
+      - /home/jonas/Downloads/signal-cli-0.6.8:/opt/signalmessenger/signal-cli
+      - ~/.local/share/signal-cli/data:/opt/signalmessenger/data
