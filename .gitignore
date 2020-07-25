@@ -1,6 +1,6 @@
 # WiFi-Config
 wificonfig.h
-
+__pycache__/
 # Prerequisites
 *.d
 
