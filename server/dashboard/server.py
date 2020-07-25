@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 import mariadb 
 import pandas as pd
-
+import datetime
 # Create the application instance
 app = Flask(__name__)
 
@@ -11,7 +11,7 @@ def stat():
     conn = mariadb.connect(
         user="green",
         password="house",
-        host="db",
+        host="raspberrypi",
         database="greenhouse")
     c = conn.cursor() 
     
@@ -33,12 +33,18 @@ def stat():
 
     df = pd.read_sql_query("SELECT * from sensordata ORDER BY date_time DESC  LIMIT 400", conn)
 
-    # verify that result of SQL query is stored in the dataframe
-    print(df.to_json())
-
     conn.close()
 
-    time = df['date_time'].values.tolist() # x axis
+    #time = df['date_time'].values.tolist() # x axis
+
+    time = []
+    f = '%Y-%m-%dT%H:%M:%S'
+    for timestamp in df['date_time'].values:
+        print(str(timestamp).split(".")[0].replace("T"," "))
+        time.append(str(timestamp).split(".")[0].replace("T"," "))
+
+    print(time)
+
     data1 = df['temp_indoor'].values.tolist()
     data2 = df['temp_outdoor'].values.tolist()
     soil = df['soil_moisture'].values.tolist()

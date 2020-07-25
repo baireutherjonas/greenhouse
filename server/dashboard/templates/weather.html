@@ -119,47 +119,50 @@
 
     <script>
         var weeks = {{ time| safe}};
-        var data1 = {{ data1| safe}};
-        var data2 = {{ data2| safe}};
+        var temp_in_arr_ = {{ data1| safe}};
+        var temp_out_arr = {{ data2| safe}};
 
         console.log(weeks);
 
-        var config = {
-            data: {
-                labels: weeks,
-                datasets: [{
-                label: "Innentemperatur",
-                    type: "line",
-                    data: data1,
-                    pointRadius: 0,
-                    borderColor: 'rgba(52, 235, 113,1)',
-                    backgroundColor: 'rgba(52, 235, 113,0.1)'
-                }, {
-                    label: "Außentemperatur",
-                    type: "line",
-                    data: data2,
-                    pointRadius: 0,
-                    borderColor: 'rgba(52, 162, 235,1)',
-                    backgroundColor: 'rgba(52, 162, 235,0.1)'
-                    
-                }]
-            },
-            options: {
-                scales: {
-                    xAxes: [{
-                        type: "linear",
-                        position: "bottom"
-                    }],
-                    yAxes: [{
-                        type: "linear"
-                    }]
+        var speedData = {
+            labels: weeks,
+            datasets: [{
+                label: "Temp Indoor",
+                data: temp_in_arr_,
+            }, {
+                label: "Temp Outdoor",
+                data: temp_out_arr,
+            }]
+        };
+
+        var chartOptions = {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    boxWidth: 80,
+                    fontColor: 'black'
                 }
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        unit: "day",
+                        displayFormats: {
+                            "day": "YYYY-MM-DD"
+                        }
+                    }
+                }]
             }
         };
 
         var chart_context = document.getElementById("myChart");
-        var chart = new Chart(chart_context, config);
-
+        var chart = new Chart(chart_context, {
+            type: 'line',
+            data: speedData,
+            options: chartOptions
+        });
 
 
         var weeks = {{ time| safe}};
