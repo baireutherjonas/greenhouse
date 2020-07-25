@@ -8,9 +8,23 @@ services:
     links:
       - "notification-service:notification-service"
       - "mosquitto:mqtt"
+      - "mariadb:db"
     depends_on:
       - mosquitto
       - notification-service
+      - mariadb
+
+  dashboard:
+    image: greenhouse-dashboard
+    build: ./dashboard
+    container_name: greenhouse-dashboard
+    restart: always
+    links:
+      - "mariadb:db"
+    ports:
+      - "5004:5004"
+    depends_on:
+      - mariadb
   
   mosquitto:
     image: eclipse-mosquitto
@@ -26,8 +40,36 @@ services:
     build: ./notification-service
     image: greenhouse-notification-service
     container_name: greenhouse-notification-service
+    restart: always
     expose:
       - "5000"
     volumes:
       - /home/jonas/Downloads/signal-cli-0.6.8:/opt/signalmessenger/signal-cli
       - ~/.local/share/signal-cli/data:/opt/signalmessenger/data
+
+  mariadb:
+    build: 
+      context: ./database
+      dockerfile: Dockerfile
+      args:
+        DB_NAME: ${DB_NAME}
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+    image: greenhouse-mariadb
+    container_name: greenhouse-mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - TZ=Europe/Berlin
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER} 
+      - MYSQL_PASSWORD=${DB_PASSWORD} 
+    volumes:
+      - database:/config
+    expose:
+      - "3306"
+    restart: unless-stopped
+
+volumes:
+  database:
