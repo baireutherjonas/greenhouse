@@ -2,6 +2,9 @@ import paho.mqtt.client as mqtt
 import configparser
 import datetime
 from decision_maker import decisionMaker
+from database_connector import storeData, storeLogging
+import logging
+import json
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -19,19 +22,24 @@ def on_connect(client, userdata, flags, rc):
     client.message_callback_add(config.get('Topics','TOPIC_RECEIVED_DATA'),__callback_receivedData)
 
 def __callback_sensorData(client, userdata, msg):
-    print("received sensor data: " + str(msg.payload))
+    msg.payload = msg.payload.decode("utf-8")
+    msgJson = json.loads(msg.payload)
+    logging.warning("received sensor data: " + str(msgJson))
     # store data into database
+    storeData(config,msgJson)
 
 def __callback_statusMonitor(client, userdata, msg):
     msg.payload = msg.payload.decode("utf-8")
     print("received status monitor: " + str(msg.payload))
+    storeLogging(config, str(msg.payload))
     decisionMaker(msg.payload, config)
 
 
 def __callback_receivedData(client, userdata, msg):
     print("received data: " + str(msg.payload))
     # store log messages from arduino in database
-
+    storeLogging(config, str(msg.payload))
+    
 def on_subscribe(mosq, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
 
