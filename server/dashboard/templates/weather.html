@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gewächshaus</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="1" width="30" height="30" class="d-inline-block align-top" alt="">
+            Gewächshaus
+        </a>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-2 m-3">
+                <div class="card" style="width: 18rem;">
+                    <h5 class="card-header">Lufttemperatur</h5>
+                    <div class="card-body">
+
+                        <p class="card-text">{{air_temp}}°C</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-2 m-3">
+                <div class="card" style="width: 18rem;">
+                    <h5 class="card-header">Luftfeuchtigkeit</h5>
+                    <div class="card-body">
+                        <p class="card-text">{{air_hum}}%</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-2 m-3">
+                <div class="card" style="width: 18rem;">
+                    <h5 class="card-header">Bodenfeuchtigkeit</h5>
+                    <div class="card-body">
+                        <p class="card-text">{{soil_temp}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2 m-3">
+                <div class="card" style="width: 18rem;">
+                    <h5 class="card-header">Außentemperatur</h5>
+                    <div class="card-body">
+                        <p class="card-text">{{air_temp_outdoor}}°C</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2 m-3">
+                <div class="card" style="width: 18rem;">
+                    <h5 class="card-header">Außenluftfeuchtigkeit</h5>
+                    <div class="card-body">
+                        <p class="card-text">{{air_hum_outdoor}}%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-5">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-5">
+                <canvas id="myChart-soil"></canvas>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-5">
+                <p>
+                    <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Show logs</a>
+                </p>
+                <div class="row">
+                    <div class="col">
+                      <div class="collapse multi-collapse" id="multiCollapseExample1">
+                        <div class="card card-body">
+                            <table>
+                                <tr>
+                                    <th> Time</th>
+                                    <th> Action</th>
+                                </tr> 
+                                {% for row in loggerresult %}
+                                <tr>
+                                    <td> {{ row[0] }}</td>
+                                    <td> {{ row[1] }}</td>
+                                </tr> 
+                                {% endfor %}
+                              </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                
+            </div>
+        </div>
+    </div>
+    <footer class="footer" style="  bottom: 0;
+                                    width: 100%;
+                                    height: 60px; 
+                                    line-height: 60px; 
+                                    background-color: #f5f5f5;">
+        <div class="container">
+            <span class="text-muted">Datum der Messung: {{date}}</span>
+        </div>
+    </footer>
+
+    <script>
+        var weeks = {{ time| safe}};
+        var data1 = {{ data1| safe}};
+        var data2 = {{ data2| safe}};
+
+        console.log(weeks);
+
+        var config = {
+            data: {
+                labels: weeks,
+                datasets: [{
+                label: "Innentemperatur",
+                    type: "line",
+                    data: data1,
+                    pointRadius: 0,
+                    borderColor: 'rgba(52, 235, 113,1)',
+                    backgroundColor: 'rgba(52, 235, 113,0.1)'
+                }, {
+                    label: "Außentemperatur",
+                    type: "line",
+                    data: data2,
+                    pointRadius: 0,
+                    borderColor: 'rgba(52, 162, 235,1)',
+                    backgroundColor: 'rgba(52, 162, 235,0.1)'
+                    
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: "linear",
+                        position: "bottom"
+                    }],
+                    yAxes: [{
+                        type: "linear"
+                    }]
+                }
+            }
+        };
+
+        var chart_context = document.getElementById("myChart");
+        var chart = new Chart(chart_context, config);
+
+
+
+        var weeks = {{ time| safe}};
+        var data1 = {{ soil| safe}};
+
+        var config = {
+            data: {
+                labels: weeks,
+                datasets: [{
+                label: "Bodenfeuchtigkeit",
+                    type: "line",
+                    data: data1,
+                    pointRadius: 0,
+                    borderColor: 'rgba(52, 235, 113,1)',
+                    backgroundColor: 'rgba(52, 235, 113,0.1)'
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: "time",
+                        time: {
+                            unit: "day",
+                            displayFormats: {
+                                "day": "YYYY-MM-DD"
+                            }
+                        }
+                    }],
+                    yAxes: [{
+                        type: "linear"
+                    }]
+                }
+            }
+        };
+
+        var chart_context = document.getElementById("myChart-soil");
+        var chart = new Chart(chart_context, config);
+    </script>
+</body>
+
+</html>
