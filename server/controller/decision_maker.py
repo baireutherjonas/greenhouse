@@ -6,25 +6,26 @@ import json
 import datetime
 import paho.mqtt.publish as publish
 import logging
+import os
 
 lastPumpDay = 0
 
-def decisionMaker(message, config):
+def decisionMaker(message):
     try:
         logging.warning("Decision maker activated")
-        getSensorData(config)
+        getSensorData()
         msgJson = json.loads(message)
         if 'action' in msgJson:
-            if(msgJson['action'] == config.get('ArduinoMessages', 'MESSAGE_GREENHOUSE_IS_ONLINE')):
-                logging.warning("Received message: " + config.get('ArduinoMessages', 'MESSAGE_GREENHOUSE_IS_ONLINE'))
+            if(msgJson['action'] == os.environ['ArduinoMessages_MESSAGE_GREENHOUSE_IS_ONLINE']):
+                logging.warning("Received message: " + os.environ['ArduinoMessages_MESSAGE_GREENHOUSE_IS_ONLINE'])
                 now = datetime.datetime.now()
-                if( now.hour == int(config.get('Settings','PUMPINGSTARTHOUR')) and now.minute <= int(config.get('Settings','PUMPINGDURATION')) + int(config.get('Settings','SLEEPDURATION')) - 1):
+                if( now.hour == int(os.environ['SETTINGS_PUMPINGSTARTHOUR']) and now.minute <= int(os.environ['SETTINGS_PUMPINGDURATION']) + int(os.environ['SETTINGS_SLEEPDURATION']) - 1):
                     logging.warning("Action: Start pumping")
-                    threading.Thread(target=activatePump, args=(config.get('Settings','PUMPINGDURATION'), config)).start()
+                    threading.Thread(target=activatePump, args=(os.environ['SETTINGS_PUMPINGDURATION'])).start()
                 else:
-                    sendArduinoToSleep(config)
+                    sendArduinoToSleep()
         else:
-            sendArduinoToSleep(config)
+            sendArduinoToSleep()
     except ValueError:
         pass
 

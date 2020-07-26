@@ -1,13 +1,14 @@
 import paho.mqtt.publish as publish
 import json
+import os
 
-def getSensorData(config):
+def getSensorData():
     msg = {
-    "action": config.get('Actions','ACTION_GET_SENSOR_DATA'),
+    "action": os.environ['ACTIONS_ACTION_GET_SENSOR_DATA'],
     "parameter":{"sleppingtime":2,"watergroundDistance":24,"soilMoistureMax":800,"soilMoistureMin":300}
     }
 
     # convert into JSON:
     msgJSON = json.dumps(msg)
-    publish.single(config.get('Topics','TOPIC_ACTION_GREENHOUSE'), msgJSON, hostname=config.get('Config','BROKER'))
+    publish.single(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'], msgJSON, hostname=os.environ['CONFIG_BROKER'])
     

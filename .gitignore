@@ -1,6 +1,8 @@
 # WiFi-Config
 wificonfig.h
 __pycache__/
+signal-cli/
+signal-cli-client/
 # Prerequisites
 *.d
 

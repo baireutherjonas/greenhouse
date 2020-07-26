@@ -5,6 +5,8 @@ services:
     build: ./controller
     container_name: greenhouse-controller
     restart: always
+    env_file:
+      - .env
     links:
       - "notification-service:notification-service"
       - "mosquitto:mqtt"
@@ -19,6 +21,8 @@ services:
     build: ./dashboard
     container_name: greenhouse-dashboard
     restart: always
+    env_file:
+      - .env
     links:
       - "mariadb:db"
     ports:
@@ -41,12 +45,16 @@ services:
     image: greenhouse-notification-service
     container_name: greenhouse-notification-service
     restart: always
-    expose:
-      - "5000"
+    env_file:
+      - .env
     volumes:
-      - /home/jonas/Downloads/signal-cli-0.6.8:/opt/signalmessenger/signal-cli
-      - ~/.local/share/signal-cli/data:/opt/signalmessenger/data
-
+      - ./notification-service/signal-cli-client:/opt/signalmessenger/signal-cli
+      - ./notification-service/signal-cli/data:/opt/signalmessenger/data
+    links:
+      - "mosquitto:mqtt"
+    depends_on:
+      - mosquitto
+    
   mariadb:
     build: 
       context: ./database

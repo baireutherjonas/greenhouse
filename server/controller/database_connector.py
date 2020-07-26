@@ -1,21 +1,21 @@
 import mariadb
 from datetime import datetime
+import os
 
-def storeData(config, msgJson):
-    __insert(config, msgJson['indoor']['hum'],msgJson['indoor']['temp'],msgJson['outdoor']['hum'],msgJson['outdoor']['temp'],msgJson['water']['height'],msgJson['soil']['moisture'],msgJson['soil']['moistureraw'])
+def storeData(msgJson):
+    __insert(msgJson['indoor']['hum'],msgJson['indoor']['temp'],msgJson['outdoor']['hum'],msgJson['outdoor']['temp'],msgJson['water']['height'],msgJson['soil']['moisture'],msgJson['soil']['moistureraw'])
 
-def storeLogging(config, message):
-    __insertLogging(config, message)
+def storeLogging(message):
+    __insertLogging(message)
 
-def __insert(config, hum_indoor, temp_indoor, hum_outdoor, temp_outdoor, water_level, soil_moisture, soil_moisture_raw):
+def __insert(hum_indoor, temp_indoor, hum_outdoor, temp_outdoor, water_level, soil_moisture, soil_moisture_raw):
     try:
         conn = mariadb.connect(
-            user=config.get('Database','USER'),
-            password=config.get('Database','PASSWORD'),
-            host=config.get('Database','HOST'),
+            user=os.environ['DB_USER'],
+            password=os.environ['DB_PASSWORD'],
+            host=os.environ['DB_HOST'],
             port=3306,
-            database=config.get('Database','DB_NAME')
-
+            database=os.environ['DB_NAME']
         )
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
@@ -31,15 +31,14 @@ def __insert(config, hum_indoor, temp_indoor, hum_outdoor, temp_outdoor, water_l
 
     conn.commit()
 
-def __insertLogging(config, message):
+def __insertLogging(message):
     try:
         conn = mariadb.connect(
-            user=config.get('Database','USER'),
-            password=config.get('Database','PASSWORD'),
-            host=config.get('Database','HOST'),
+            user=os.environ['DB_USER'],
+            password=os.environ['DB_PASSWORD'],
+            host=os.environ['DB_HOST'],
             port=3306,
-            database=config.get('Database','DB_NAME')
-
+            database=os.environ['DB_NAME']
         )
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")

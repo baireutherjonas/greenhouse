@@ -1,40 +1,41 @@
 import paho.mqtt.publish as publish
 import time
 import json
+import os
 
-def activatePump( duration, config):
+def activatePump( duration):
 
     msg = {
-    "action": config.get('Actions','ACTION_START_WATERING')
+    "action": os.environ['ACTIONS_ACTION_START_WATERING']
     }
 
     # convert into JSON:
     msgJSON = json.dumps(msg)
-    publish.single(config.get('Topics','TOPIC_ACTION_GREENHOUSE'), msgJSON, hostname=config.get('Config','BROKER'))
+    publish.single(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'], msgJSON, hostname=os.environ['CONFIG_BROKER'])
     time.sleep(int(duration)*60)
 
     msg = {
-    "action": config.get('Actions','ACTION_STOP_WATERING')
+    "action": os.environ['ACTIONS_ACTION_STOP_WATERING']
     }
 
     # convert into JSON:
     msgJSON = json.dumps(msg)
-    publish.single(config.get('Topics','TOPIC_ACTION_GREENHOUSE'), msgJSON, hostname=config.get('Config','BROKER'))
-    sendArduinoToSleep(config)
+    publish.single(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'], msgJSON, hostname=os.environ['CONFIG_BROKER'])
+    sendArduinoToSleep()
     
 
 
-def sendArduinoToSleep(config):
+def sendArduinoToSleep():
     # create json
     # a Python object (dict):
     msg = {
-    "action": config.get('Actions','ACTION_SLEEP'),
+    "action": os.environ['ACTIONS_ACTION_SLEEP'],
     "parameter": {
-        "sleepingtime": config.get('Settings','SLEEPDURATION')
+        "sleepingtime": os.environ['SETTINGS_SLEEPDURATION']
     }
     }
 
     # convert into JSON:
     msgJSON = json.dumps(msg)
 
-    publish.single(config.get('Topics','TOPIC_ACTION_GREENHOUSE'), msgJSON, hostname=config.get('Config','BROKER'))
+    publish.single(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'], msgJSON, hostname=os.environ['CONFIG_BROKER'])

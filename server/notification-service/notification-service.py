@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+import paho.mqtt.client as mqtt
 from os import path
+import json
 import subprocess
-import configparser
+import os
 
 class SignalNotificationService():
     """Implement the notification service for Join."""
@@ -35,18 +36,7 @@ class SignalNotificationService():
         if ret != 0:
             raise Exception("Signal Error %d: '%s'" % (ret, err))
 
-        return "Message send successfully", 200
-
-config = configparser.ConfigParser()
-config.read("config.ini")
-
-api = Flask(__name__)
-
-@api.route('/sendMessage', methods=['PUT'])
-def sendMessage():
-    #message = request.args.get('message', '')
-    content = request.get_json(silent=True)
-    message = content["message"]
+def sendMessage(message):
     return signalSender.send_message(message)
 
 def __initSignal(sender, recp, conf_path, cli_path):
@@ -63,7 +53,28 @@ def __initSignal(sender, recp, conf_path, cli_path):
 
     return SignalNotificationService(sender_nr, recp_nr, signal_conf_path, signal_cli_path)
 
-signalSender = __initSignal(config.get('Signal','SENDER'),config.get('Signal','RECP'),config.get('Signal','CONF_PATH'),config.get('Signal','CLI_PATH'))
+signalSender = __initSignal(os.environ['SIGNAL_SENDER'],os.environ['SIGNAL_RECP'],os.environ['SIGNAL_CONF_PATH'],os.environ['SIGNAL_CLI_PATH'])
 
-if __name__ == '__main__':
-    api.run(host='0.0.0.0')
+# The callback for when the client receives a CONNACK response from the server.
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+
+    client.subscribe(os.environ['TOPICS_TOPIC_NOTIFICATIONS'])
+    
+    client.message_callback_add(os.environ['TOPICS_TOPIC_NOTIFICATIONS'],__callback_notification)
+   
+   
+def __callback_notification(client, userdata, msg):
+    print("Send notification: " + str(msg.payload))
+    sendMessage( str(msg.payload))
+    
+def on_subscribe(mosq, obj, mid, granted_qos):
+    print("Subscribed: " + str(mid) + " " + str(granted_qos))
+
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_subscribe = on_subscribe
+
+client.connect(os.environ['CONFIG_BROKER'], 1883, 60)
+
+client.loop_forever()
