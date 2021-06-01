@@ -5,8 +5,8 @@ import os
 def storeData(msgJson):
     __insert(msgJson['indoor']['hum'],msgJson['indoor']['temp'],msgJson['outdoor']['hum'],msgJson['outdoor']['temp'],msgJson['water']['height'],msgJson['soil']['moisture'],msgJson['soil']['moistureraw'])
 
-def storeLogging(message):
-    __insertLogging(message)
+def storeLogging(topic, message):
+    __insertLogging(topic, message)
 
 def __insert(hum_indoor, temp_indoor, hum_outdoor, temp_outdoor, water_level, soil_moisture, soil_moisture_raw):
     try:
@@ -31,7 +31,7 @@ def __insert(hum_indoor, temp_indoor, hum_outdoor, temp_outdoor, water_level, so
 
     conn.commit()
 
-def __insertLogging(message):
+def __insertLogging(topic, message):
     try:
         conn = mariadb.connect(
             user=os.environ['DB_USER'],
@@ -49,8 +49,8 @@ def __insertLogging(message):
     formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
 
     cur.execute(
-    "INSERT INTO arduinolog VALUES (?, ?)", 
-    (formatted_date, message))
+    "INSERT INTO arduinolog VALUES (?, ?, ?)", 
+    (formatted_date, topic, message))
 
     conn.commit()
 

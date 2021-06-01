@@ -28,7 +28,7 @@ def stat():
         air_hum_outdoor=row[3]
         soil_temp=row[6]
 
-    c.execute("SELECT * from arduinolog ORDER BY date_time DESC LIMIT 20")
+    c.execute("SELECT * from arduinolog ORDER BY date_time DESC")
     loggerresult = c.fetchall()
 
     c.close()

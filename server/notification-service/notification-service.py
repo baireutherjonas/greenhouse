@@ -3,6 +3,7 @@ from os import path
 import json
 import subprocess
 import os
+import redis
 
 class SignalNotificationService():
     """Implement the notification service for Join."""
@@ -40,7 +41,6 @@ def sendMessage(message):
     return signalSender.send_message(message)
 
 def __initSignal(sender, recp, conf_path, cli_path):
-    """Get the Join notification service."""
     sender_nr = sender
     recp_nr = recp
     signal_cli_path = cli_path
@@ -53,23 +53,23 @@ def __initSignal(sender, recp, conf_path, cli_path):
 
     return SignalNotificationService(sender_nr, recp_nr, signal_conf_path, signal_cli_path)
 
-signalSender = __initSignal(os.environ['SIGNAL_SENDER'],os.environ['SIGNAL_RECP'],os.environ['SIGNAL_CONF_PATH'],os.environ['SIGNAL_CLI_PATH'])
+
+r = redis.Redis(host=os.environ['CONFIG_REDIS'], port=6379, db=0)
+signalSender = __initSignal(r.get('signalsender'),r.get('signalreceiver'),os.environ['SIGNAL_CONF_PATH'],os.environ['SIGNAL_CLI_PATH'])
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-
-    client.subscribe(os.environ['TOPICS_TOPIC_NOTIFICATIONS'])
-    
+    print(str(datetime.datetime.now()) + " Connected with result code "+str(rc))
+    client.subscribe(os.environ['TOPICS_TOPIC_NOTIFICATIONS'])  
     client.message_callback_add(os.environ['TOPICS_TOPIC_NOTIFICATIONS'],__callback_notification)
    
    
 def __callback_notification(client, userdata, msg):
-    print("Send notification: " + str(msg.payload))
+    print(str(datetime.datetime.now()) + " Send notification: " + str(msg.payload))
     sendMessage( str(msg.payload))
     
 def on_subscribe(mosq, obj, mid, granted_qos):
-    print("Subscribed: " + str(mid) + " " + str(granted_qos))
+    print(str(datetime.datetime.now()) + " Subscribed: " + str(mid) + " " + str(granted_qos))
 
 client = mqtt.Client()
 client.on_connect = on_connect

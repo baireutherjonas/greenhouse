@@ -6,8 +6,10 @@
 #define TOPIC_ACTION_GREENHOUSE "/greenhouse/actionGreenhouse"
 
 #define MESSAGE_GREENHOUSE_IS_ONLINE "{\"action\":\"greenhouse is now connected\"}"
-#define MESSAGE_START_WATERING "greenhouse start watering"
-#define MESSAGE_STOP_WATERING "greenhouse stop watering"
+#define MESSAGE_START_WATERING "{\"action\":\"greenhouse start watering\"}"
+#define MESSAGE_STOP_WATERING "{\"action\":\"greenhouse stop watering\"}"
+#define MESSAGE_GO_SLEEPING "{\"action\":\"greenhouse go sleeping\"}"
+#define MESSAGE_FALLBACK_WATERING "{\"action\":\"fallback to stop watering was activated\"}"
 
 #define ACTION_START_WATERING "actionStartWatering"
 #define ACTION_STOP_WATERING "actionStopWatering"
@@ -26,11 +28,9 @@
 #define JSON_KEY_PARAMETER "parameter"
 #define JSON_KEY_ACTION "action"
 #define JSON_KEY_TIMETOSLEEP "sleepingtime"
+#define JSON_KEY_TIMETOWATERING "duration"
 #define JSON_KEY_SOILMOISTUREMAX "soilMoistureMax"
 #define JSON_KEY_SOILMOISTUREMIN "soilMoistureMin"
 #define JSON_KEY_WATERGROUNDDISTANCE "watergroundDistance"
 
-/*const int config_watergroundDistance = 24;
-const int config_soilMoistureMax = 800;
-const int config_soilMoistureMin = 330;*/
 const int config_fallbackMaxWateringDuration = 30; //Min

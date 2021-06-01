@@ -1,41 +1,42 @@
-import paho.mqtt.publish as publish
 import time
 import json
 import os
+import datetime
 
-def activatePump( duration):
-
-    msg = {
-    "action": os.environ['ACTIONS_ACTION_START_WATERING']
-    }
-
-    # convert into JSON:
-    msgJSON = json.dumps(msg)
-    publish.single(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'], msgJSON, hostname=os.environ['CONFIG_BROKER'])
-    time.sleep(int(duration)*60)
+def activatePump(duration, sleepduration, client):
 
     msg = {
-    "action": os.environ['ACTIONS_ACTION_STOP_WATERING']
+        "action": os.environ['ACTIONS_ACTION_START_WATERING'],
+        "parameter": {
+            "duration": int(duration),
+            "sleepingtime": int(duration)
+        }
     }
 
-    # convert into JSON:
-    msgJSON = json.dumps(msg)
-    publish.single(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'], msgJSON, hostname=os.environ['CONFIG_BROKER'])
-    sendArduinoToSleep()
+    client.publish("/greenhouse/notifications",json.dumps("start watering"))
+   
+    client.publish(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'],json.dumps(msg))
+    print(str(datetime.datetime.now()) + " Actuator activator: start pumping")
+    
+    #time.sleep(int(duration)*60)
+
+    #msg = {
+    #    "action": os.environ['ACTIONS_ACTION_STOP_WATERING']
+    #}
+
+    #client.publish(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'],json.dumps(msg))
+    #print(str(datetime.datetime.now()) + " Actuator activator: stop pumping")
+    #sendArduinoToSleep(sleepduration, client)
     
 
 
-def sendArduinoToSleep():
-    # create json
-    # a Python object (dict):
+def sendArduinoToSleep(duration, client):
     msg = {
-    "action": os.environ['ACTIONS_ACTION_SLEEP'],
-    "parameter": {
-        "sleepingtime": os.environ['SETTINGS_SLEEPDURATION']
-    }
+        "action": os.environ['ACTIONS_ACTION_SLEEP'],
+        "parameter": {
+            "sleepingtime": int(duration)
+        }
     }
 
-    # convert into JSON:
-    msgJSON = json.dumps(msg)
-
-    publish.single(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'], msgJSON, hostname=os.environ['CONFIG_BROKER'])
+    client.publish(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'],json.dumps(msg))
+    print(str(datetime.datetime.now()) + " Actuator activator: send to sleep for: " + str(duration))

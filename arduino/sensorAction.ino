@@ -61,7 +61,9 @@ void getSensorData(JsonObject jsonObj) {
 void goSleeping(JsonObject jsonObj) {
   Serial.print("sleeping: ");
   Serial.println(int(jsonObj[JSON_KEY_PARAMETER][JSON_KEY_TIMETOSLEEP]));
+  publishMessage(TOPIC_STATUS_DATA, MESSAGE_GO_SLEEPING);
   int timeToSleep = jsonObj[JSON_KEY_PARAMETER][JSON_KEY_TIMETOSLEEP];
+  delay(1000);
   wifi_off();
   ESP.deepSleep(timeToSleep*60000000); 
 }

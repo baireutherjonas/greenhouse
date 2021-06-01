@@ -4,28 +4,31 @@ from actuator_activator import activatePump, sendArduinoToSleep
 from collector import getSensorData
 import json
 import datetime
-import paho.mqtt.publish as publish
-import logging
 import os
+import redis
 
-lastPumpDay = 0
-
-def decisionMaker(message):
+def decisionMaker(message, client):
     try:
-        logging.warning("Decision maker activated")
-        getSensorData()
+        print(str(datetime.datetime.now()) + " Decision maker activated")
         msgJson = json.loads(message)
+
+        r = redis.Redis(host=os.environ['CONFIG_REDIS'], port=6379, db=0)
+
         if 'action' in msgJson:
-            if(msgJson['action'] == os.environ['ArduinoMessages_MESSAGE_GREENHOUSE_IS_ONLINE']):
-                logging.warning("Received message: " + os.environ['ArduinoMessages_MESSAGE_GREENHOUSE_IS_ONLINE'])
+            if(msgJson['action'] == os.environ['ARDUINOMESSAGES_MESSAGE_GREENHOUSE_IS_ONLINE']):
+                print(str(datetime.datetime.now()) + " DM: received message: " + os.environ['ARDUINOMESSAGES_MESSAGE_GREENHOUSE_IS_ONLINE'])
+                getSensorData(r)
+                print(str(datetime.datetime.now()) + " DM: collect sensor Data")
                 now = datetime.datetime.now()
-                if( now.hour == int(os.environ['SETTINGS_PUMPINGSTARTHOUR']) and now.minute <= int(os.environ['SETTINGS_PUMPINGDURATION']) + int(os.environ['SETTINGS_SLEEPDURATION']) - 1):
-                    logging.warning("Action: Start pumping")
-                    threading.Thread(target=activatePump, args=(os.environ['SETTINGS_PUMPINGDURATION'])).start()
+                if( now.hour == int(r.get('pumpingstarthour')) and now.minute <= int(r.get('pumpingduration')) + int(r.get('sleepduration')) - 1):
+                    print(str(datetime.datetime.now()) + " DM: action: Start pumping")
+                    threading.Thread(target=activatePump, args=[r.get('pumpingduration'),r.get('sleepduration'), client]).start()
                 else:
-                    sendArduinoToSleep()
+                    print(str(datetime.datetime.now()) + " DM: action: send to sleep")
+                    sendArduinoToSleep(r.get('sleepduration'), client)
         else:
-            sendArduinoToSleep()
+            print(str(datetime.datetime.now()) + " DM: action: send to sleep")
+            sendArduinoToSleep(r.get('sleepduration'), client)
     except ValueError:
         pass
 

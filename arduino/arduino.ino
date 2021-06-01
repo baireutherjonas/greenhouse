@@ -10,12 +10,12 @@ WiFiClient espClient;
 PubSubClient client(espClient);
  
 void setup() {
+  initWatering();
   Serial.begin(115200);
   setup_wifi();
   client.setServer(MQTT_BROKER, 1883);
   client.setCallback(callback);
   initSensors();
-  initWatering();
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -28,9 +28,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   String sAll = sTopic + ":" + sMsg;
 
   Serial.println(msg);
-  char cMsg[sAll.length()+1];
-  sAll.toCharArray(cMsg, sizeof(cMsg));
-  publishMessage(TOPIC_RECEIVED_DATA, cMsg);
+  publishMessage(TOPIC_RECEIVED_DATA, sAll);
 
   // Create json-object out of message
   DynamicJsonDocument doc(1024);
@@ -41,11 +39,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void handleMessage(JsonObject message) {
-  Serial.print("action: ");
   const char* error = message[JSON_KEY_ACTION];
   Serial.println(error);
    if(message[JSON_KEY_ACTION] == ACTION_START_WATERING) {
+
         startWatering(message);
+        setup_wifi();
+        goSleeping(message);
     } else if(message[JSON_KEY_ACTION] == ACTION_STOP_WATERING) {
         stopWatering();
     } else if(message[JSON_KEY_ACTION] == ACTION_GET_SENSOR_DATA) {
@@ -56,21 +56,35 @@ void handleMessage(JsonObject message) {
 }
  
 void setup_wifi() {
+    Serial.println("start connecting");
     delay(10); 
     WiFi.begin(SSID, PSK);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
+        Serial.println("next try");
     }
+    
+    Serial.println("connected");
 }
 
 void wifi_off() {
   Serial.println("WiFi Off");
+  client.disconnect();
   WiFi.disconnect();
   WiFi.mode(WIFI_OFF); 
   WiFi.forceSleepBegin();
 }
 
 void publishMessage(char* topic, String message) {
+  /*String msg = message;
+  char c[msg.length()];
+  msg.toCharArray(c, sizeof(c));
+  bool result;
+  result = false;
+  while(result == false) {
+    result = client.publish(topic, c);
+  }*/
+  
   String msg = message;
   char c[msg.length()+1];
   msg.toCharArray(c, sizeof(c));

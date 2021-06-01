@@ -1,4 +1,4 @@
-CREATE TABLE sensordata (
+CREATE TABLE  sensordata (
     date_time DATETIME,
     hum_indoor FLOAT,
     temp_indoor FLOAT,
@@ -9,7 +9,8 @@ CREATE TABLE sensordata (
     soil_moisture_raw INT
 );
 
-CREATE TABLE arduinolog (
+CREATE TABLE  arduinolog (
     date_time DATETIME,
+    topic text,
     log_message text
 );

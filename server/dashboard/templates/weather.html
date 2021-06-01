@@ -17,7 +17,7 @@
 <body>
     <nav class="navbar navbar-light bg-light">
         <a class="navbar-brand" href="#">
-            <img src="1" width="30" height="30" class="d-inline-block align-top" alt="">
+            <!--<img src="1" width="30" height="30" class="d-inline-block align-top" alt="">-->
             Gewächshaus
         </a>
     </nav>
@@ -86,15 +86,19 @@
                     <div class="col">
                       <div class="collapse multi-collapse" id="multiCollapseExample1">
                         <div class="card card-body">
-                            <table>
+                            <input type="text" id="tableFilterText" onkeyup="filterTable()" placeholder="Search for keyword..">
+
+                            <table id="loggingTable">
                                 <tr>
                                     <th> Time</th>
+                                    <th> Topic</th>
                                     <th> Action</th>
                                 </tr> 
                                 {% for row in loggerresult %}
                                 <tr>
                                     <td> {{ row[0] }}</td>
                                     <td> {{ row[1] }}</td>
+                                    <td> {{ row[2] }}</td>
                                 </tr> 
                                 {% endfor %}
                               </table>
@@ -200,6 +204,31 @@
 
         var chart_context = document.getElementById("myChart-soil");
         var chart = new Chart(chart_context, config);
+
+
+        function filterTable() {
+            // Declare variables
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("tableFilterText");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("loggingTable");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td_topic = tr[i].getElementsByTagName("td")[1];
+                td_action = tr[i].getElementsByTagName("td")[2];
+                if (td_topic && td_action) {
+                    topicValue = td_topic.textContent || td_topic.innerText;
+                    actionValue = td_action.textContent || td_action.innerText;
+                    if (topicValue.toUpperCase().indexOf(filter) > -1 || actionValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
     </script>
 </body>
 

@@ -1,4 +1,4 @@
-version: "2"
+version: "3.3"
 services:
   controller:
     image: greenhouse-controller
@@ -11,10 +11,12 @@ services:
       - "notification-service:notification-service"
       - "mosquitto:mqtt"
       - "mariadb:db"
+      - "redis:redis"
     depends_on:
       - mosquitto
       - notification-service
       - mariadb
+      - redis
 
   dashboard:
     image: greenhouse-dashboard
@@ -25,10 +27,12 @@ services:
       - .env
     links:
       - "mariadb:db"
+      - "redis:redis"
     ports:
       - "5004:5004"
     depends_on:
       - mariadb
+      - redis
   
   mosquitto:
     image: eclipse-mosquitto
@@ -52,8 +56,10 @@ services:
       - ./notification-service/signal-cli/data:/opt/signalmessenger/data
     links:
       - "mosquitto:mqtt"
+      - "redis:redis"
     depends_on:
       - mosquitto
+      - redis
     
   mariadb:
     build: 
@@ -78,6 +84,17 @@ services:
     expose:
       - "3306"
     restart: unless-stopped
+      
+  redis:
+    #image: arm32v7/redis
+    image: redis
+    container_name: greenhouse-redis
+    expose:
+      - "6379"
+    volumes:
+      - redisdata:/var/lib/redis
+    restart: unless-stopped
 
 volumes:
   database:
+  redisdata:
