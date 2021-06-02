@@ -47,7 +47,7 @@ def stat():
     temp_outdoor = df['temp_outdoor'].values.tolist()
     soil_moisture = df['soil_moisture'].values.tolist()
 
-    return render_template('weather.html', date=date, air_temp=air_temp, air_hum=air_hum,air_temp_outdoor=air_temp_outdoor, air_hum_outdoor=air_hum_outdoor, soil_temp=soil_temp,  time=time, data1=temp_indoor, data2=temp_outdoor, soil=soil_moisture, loggerresult=loggerresult)
+    return render_template('weather.html', date=date, air_temp=air_temp, air_hum=air_hum,air_temp_outdoor=air_temp_outdoor, air_hum_outdoor=air_hum_outdoor, soil_temp=soil_temp,  time=time, temp_indoor=temp_indoor, temp_outdoor=temp_outdoor, soil=soil_moisture, loggerresult=loggerresult)
 
 # If we're running in stand alone mode, run the application
 if __name__ == '__main__':

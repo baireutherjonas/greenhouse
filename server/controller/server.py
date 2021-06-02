@@ -10,8 +10,8 @@ import redis
 class Controller():
 
     def __init__(self, client):
-        self.client = client
         self.__init_redis()
+        self.client = client
 
     # The callback for when the client receives a CONNACK response from the server.
     def on_connect(self, client, userdata, flags, rc):

@@ -9,7 +9,7 @@ def activatePump(duration, sleepduration, client):
         "action": os.environ['ACTIONS_ACTION_START_WATERING'],
         "parameter": {
             "duration": int(duration),
-            "sleepingtime": int(duration)
+            "sleepingtime": int(sleepduration)
         }
     }
 
@@ -17,17 +17,6 @@ def activatePump(duration, sleepduration, client):
    
     client.publish(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'],json.dumps(msg))
     print(str(datetime.datetime.now()) + " Actuator activator: start pumping")
-    
-    #time.sleep(int(duration)*60)
-
-    #msg = {
-    #    "action": os.environ['ACTIONS_ACTION_STOP_WATERING']
-    #}
-
-    #client.publish(os.environ['TOPICS_TOPIC_ACTION_GREENHOUSE'],json.dumps(msg))
-    #print(str(datetime.datetime.now()) + " Actuator activator: stop pumping")
-    #sendArduinoToSleep(sleepduration, client)
-    
 
 
 def sendArduinoToSleep(duration, client):

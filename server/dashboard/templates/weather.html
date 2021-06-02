@@ -17,7 +17,6 @@
 <body>
     <nav class="navbar navbar-light bg-light">
         <a class="navbar-brand" href="#">
-            <!--<img src="1" width="30" height="30" class="d-inline-block align-top" alt="">-->
             Gewächshaus
         </a>
     </nav>
@@ -69,12 +68,12 @@
         </div>
         <div class="row">
             <div class="col mb-5">
-                <canvas id="myChart"></canvas>
+                <canvas id="chartTemp"></canvas>
             </div>
         </div>
         <div class="row">
             <div class="col mb-5">
-                <canvas id="myChart-soil"></canvas>
+                <canvas id="chartSoil"></canvas>
             </div>
         </div>
         <div class="row">
@@ -123,8 +122,8 @@
 
     <script>
         var weeks = {{ time| safe}};
-        var temp_in_arr_ = {{ data1| safe}};
-        var temp_out_arr = {{ data2| safe}};
+        var temp_in_arr_ = {{ temp_indoor| safe}};
+        var temp_out_arr = {{ temp_outdoor| safe}};
 
         console.log(weeks);
 
@@ -161,7 +160,7 @@
             }
         };
 
-        var chart_context = document.getElementById("myChart");
+        var chart_context = document.getElementById("chartTemp");
         var chart = new Chart(chart_context, {
             type: 'line',
             data: speedData,
@@ -202,7 +201,7 @@
             }
         };
 
-        var chart_context = document.getElementById("myChart-soil");
+        var chart_context = document.getElementById("chartSoil");
         var chart = new Chart(chart_context, config);
 
 

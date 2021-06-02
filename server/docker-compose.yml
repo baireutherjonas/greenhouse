@@ -86,7 +86,6 @@ services:
     restart: unless-stopped
       
   redis:
-    #image: arm32v7/redis
     image: redis
     container_name: greenhouse-redis
     expose:

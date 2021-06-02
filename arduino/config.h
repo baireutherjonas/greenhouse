@@ -1,4 +1,4 @@
-#define CLIENT_ID "greenhouse1"
+#define CLIENT_ID "greenhouse"
 
 #define TOPIC_RECEIVED_DATA "/greenhouse/receivedData"
 #define TOPIC_SENSOR_DATA "/greenhouse/sensorData"
