@@ -10,14 +10,6 @@
 
 ![](docker-compose.png)
 
-#### Controller
-
-#### Mosquitto
-
-#### Maria DB
-
-#### Notification-Service
-
 # Next steps
 
 - watering based on soil moisture and temperature during the day
