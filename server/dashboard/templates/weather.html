@@ -79,34 +79,36 @@
         <div class="row">
             <div class="col mb-5">
                 <p>
-                    <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Show logs</a>
+                    <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button"
+                        aria-expanded="false" aria-controls="multiCollapseExample1">Show logs</a>
                 </p>
                 <div class="row">
                     <div class="col">
-                      <div class="collapse multi-collapse" id="multiCollapseExample1">
-                        <div class="card card-body">
-                            <input type="text" id="tableFilterText" onkeyup="filterTable()" placeholder="Search for keyword..">
+                        <div class="collapse multi-collapse" id="multiCollapseExample1">
+                            <div class="card card-body">
+                                <input type="text" id="tableFilterText" onkeyup="filterTable()"
+                                    placeholder="Search for keyword..">
 
-                            <table id="loggingTable">
-                                <tr>
-                                    <th> Time</th>
-                                    <th> Topic</th>
-                                    <th> Action</th>
-                                </tr> 
-                                {% for row in loggerresult %}
-                                <tr>
-                                    <td> {{ row[0] }}</td>
-                                    <td> {{ row[1] }}</td>
-                                    <td> {{ row[2] }}</td>
-                                </tr> 
-                                {% endfor %}
-                              </table>
+                                <table id="loggingTable">
+                                    <tr>
+                                        <th> Time</th>
+                                        <th> Topic</th>
+                                        <th> Action</th>
+                                    </tr>
+                                    {% for row in loggerresult %}
+                                    <tr>
+                                        <td> {{ row[0] }}</td>
+                                        <td> {{ row[1] }}</td>
+                                        <td> {{ row[2] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
                         </div>
-                      </div>
                     </div>
-                  </div>
-                  
-                
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -175,7 +177,7 @@
             data: {
                 labels: weeks,
                 datasets: [{
-                label: "Bodenfeuchtigkeit",
+                    label: "Bodenfeuchtigkeit",
                     type: "line",
                     data: data1,
                     pointRadius: 0,

@@ -26,7 +26,7 @@ class Controller():
         client.message_callback_add(os.environ['TOPICS_TOPIC_RECEIVED_DATA'],self.__callback_receivedData)
 
         # initial send arduino to sleep, if he wokes up between container recreation
-        #sendArduinoToSleep(r.get('sleepduration'), self.client)
+        sendArduinoToSleep(r.get('sleepduration'), self.client)
 
 
     def __callback_sensorData(self, client, userdata, msg):
@@ -56,6 +56,7 @@ class Controller():
 
     def __init_redis(self):
         r = redis.Redis(host=os.environ['CONFIG_REDIS'], port=6379, db=0)
+        # if redis is not initialized, setup redis with default config values
         if r.get('sleepduration') == None:
             r.set('sleepduration','20')
             r.set('pumpingstarthour','20')

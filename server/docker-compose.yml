@@ -94,6 +94,18 @@ services:
       - redisdata:/var/lib/redis
     restart: unless-stopped
 
+  redis-commander:
+    container_name: greenhouse-redis-commander
+    image: redis-pi:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - "8081:8081"
+    networks:
+      - default
+  
+
 volumes:
   database:
   redisdata:

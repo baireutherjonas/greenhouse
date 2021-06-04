@@ -3,12 +3,12 @@ from datetime import datetime
 import os
 
 def storeData(msgJson):
-    __insert(msgJson['indoor']['hum'],msgJson['indoor']['temp'],msgJson['outdoor']['hum'],msgJson['outdoor']['temp'],msgJson['water']['height'],msgJson['soil']['moisture'],msgJson['soil']['moistureraw'])
+    __insertData(msgJson['indoor']['hum'],msgJson['indoor']['temp'],msgJson['outdoor']['hum'],msgJson['outdoor']['temp'],msgJson['water']['height'],msgJson['soil']['moisture'],msgJson['soil']['moistureraw'])
 
 def storeLogging(topic, message):
     __insertLogging(topic, message)
 
-def __insert(hum_indoor, temp_indoor, hum_outdoor, temp_outdoor, water_level, soil_moisture, soil_moisture_raw):
+def __insertData(hum_indoor, temp_indoor, hum_outdoor, temp_outdoor, water_level, soil_moisture, soil_moisture_raw):
     try:
         conn = mariadb.connect(
             user=os.environ['DB_USER'],
@@ -42,7 +42,6 @@ def __insertLogging(topic, message):
         )
     except mariadb.Error as e:
         print(f"Error connecting to MariaDB Platform: {e}")
-    # Get Cursor
     cur = conn.cursor()
 
     now = datetime.now()
