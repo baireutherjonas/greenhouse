@@ -22,7 +22,7 @@ void setup() {
 void callback(char* topic, byte* payload, unsigned int length) {
   char msg[length];
   for (int i = 0; i < length; i++) {
-      msg[i] = (char)payload[i];
+    msg[i] = (char)payload[i];
   }
   String sTopic = topic;
   String sMsg = msg;
@@ -42,18 +42,17 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void handleMessage(JsonObject message) {
   const char* error = message[JSON_KEY_ACTION];
   Serial.println(error);
-   if(message[JSON_KEY_ACTION] == ACTION_START_WATERING) {
-
-        startWatering(message);
-        setup_wifi();
-        goSleeping(message);
-    } else if(message[JSON_KEY_ACTION] == ACTION_STOP_WATERING) {
-        stopWatering();
-    } else if(message[JSON_KEY_ACTION] == ACTION_GET_SENSOR_DATA) {
-        getSensorData(message);
-    } else if(message[JSON_KEY_ACTION] == ACTION_SLEEP) {
-      goSleeping(message);
-    }
+  if(message[JSON_KEY_ACTION] == ACTION_START_WATERING) {
+    startWatering(message);
+    setup_wifi();
+    goSleeping(message);
+  } else if(message[JSON_KEY_ACTION] == ACTION_STOP_WATERING) {
+    stopWatering();
+  } else if(message[JSON_KEY_ACTION] == ACTION_GET_SENSOR_DATA) {
+    getSensorData(message);
+  } else if(message[JSON_KEY_ACTION] == ACTION_SLEEP) {
+    goSleeping(message);
+  }
 }
  
 void setup_wifi() {
@@ -64,7 +63,6 @@ void setup_wifi() {
         delay(500);
         Serial.println("next try");
     }
-    
     Serial.println("connected");
 }
 
@@ -77,15 +75,6 @@ void wifi_off() {
 }
 
 void publishMessage(char* topic, String message) {
-  /*String msg = message;
-  char c[msg.length()];
-  msg.toCharArray(c, sizeof(c));
-  bool result;
-  result = false;
-  while(result == false) {
-    result = client.publish(topic, c);
-  }*/
-  
   String msg = message;
   char c[msg.length()+1];
   msg.toCharArray(c, sizeof(c));
@@ -93,20 +82,20 @@ void publishMessage(char* topic, String message) {
 }
  
 void reconnect() {
-    while (!client.connected()) {
-        //if (!client.connect(CLIENT_ID,NULL, NULL,NULL,1,ACTION_GREENHOUSE_TOPIC,NULL, true)) { for retain messages
-        if (!client.connect(CLIENT_ID)) {
-            delay(5000);
-        }
+  while (!client.connected()) {
+    if (!client.connect(CLIENT_ID)) {
+      delay(5000);
     }
-    client.subscribe(TOPIC_ACTION_GREENHOUSE,1);
+  }
+  client.subscribe(TOPIC_ACTION_GREENHOUSE,1);
 
-    publishMessage(TOPIC_STATUS_DATA, MESSAGE_GREENHOUSE_IS_ONLINE);
+  publishMessage(TOPIC_STATUS_DATA, MESSAGE_GREENHOUSE_IS_ONLINE);
 }
+
 void loop() {
-    if (!client.connected()) {
-        reconnect();
-    }
-    client.loop();
-    __checkFallBackWatering();
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
+  __checkFallBackWatering();
 }
